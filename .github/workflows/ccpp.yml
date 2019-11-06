@@ -9,6 +9,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: test 
+      run: pwd
     - name: install
       run: sh install/install_new.sh
 
