@@ -7,7 +7,7 @@
 
 void SCAM::ConditionVisitorSVA::visit(SCAM::VariableOperand &node) {
     if (node.getVariable()->isSubVar()) {
-        this->ss << node.getVariable()->getParent()->getName() <<"_"  << node.getVariable()->getName();
+        this->ss << node.getVariable()->getParent()->getName() << "_" << node.getVariable()->getName();
     } else {
         this->ss << node.getVariable()->getName();
     }
@@ -21,7 +21,7 @@ void SCAM::ConditionVisitorSVA::visit(SCAM::SyncSignal &node) {
 
 void SCAM::ConditionVisitorSVA::visit(SCAM::DataSignalOperand &node) {
     if (node.getDataSignal()->isSubVar()) {
-        this->ss << node.getDataSignal()->getParent()->getName() << "_"  << node.getDataSignal()->getName();
+        this->ss << node.getDataSignal()->getParent()->getName() << "_" << node.getDataSignal()->getName();
     } else {
         this->ss << node.getDataSignal()->getName();
     }
@@ -31,9 +31,9 @@ void SCAM::ConditionVisitorSVA::visit(SCAM::DataSignalOperand &node) {
 void SCAM::ConditionVisitorSVA::visit(SCAM::Relational &node) {
     this->ss << "(";
     node.getLhs()->accept(*this);
-    if(node.getOperation() == "=="){
+    if (node.getOperation() == "==") {
         this->ss << " == ";
-    }else{
+    } else {
         this->ss << " " << node.getOperation() << " ";
     }
     node.getRhs()->accept(*this);
@@ -85,11 +85,11 @@ void SCAM::ConditionVisitorSVA::visit(SCAM::IntegerValue &node) {
 }
 
 void SCAM::ConditionVisitorSVA::visit(SCAM::Cast &node) {
-    if(node.getDataType()->isUnsigned()){
+    if (node.getDataType()->isUnsigned()) {
         this->ss << "unsigned'(32'(";
-    }else if(node.getDataType()->isInteger()){
+    } else if (node.getDataType()->isInteger()) {
         this->ss << "signed'(32'(";
-    }else throw std::runtime_error("Unsupported type for cast");
+    } else throw std::runtime_error("Unsupported type for cast");
     node.getSubExpr()->accept(*this);
     this->ss << "))";
 }
@@ -99,14 +99,6 @@ void SCAM::ConditionVisitorSVA::visit(SCAM::Return &node) {
 }
 
 void SCAM::ConditionVisitorSVA::visit(SCAM::ITE &node) {
-    /*
-     * if (print condition) {
-     *   print stmts
-     * } else {
-     *   print stmts
-     * }
-     *
-     */
 
     this->ss << "if (";
     node.getConditionStmt()->accept(*this);
@@ -153,10 +145,9 @@ void SCAM::ConditionVisitorSVA::visit(struct CompoundExpr &node) {
     auto valueMap = node.getValueMap();
     for (auto begin = valueMap.begin(); begin != valueMap.end(); ++begin) {
         begin->second->accept(*this);
-        if(begin != --valueMap.end()) this->ss << ",";
+        if (begin != --valueMap.end()) this->ss << ",";
     }
 }
-
 
 
 void SCAM::ConditionVisitorSVA::visit(BoolValue &node) {
@@ -166,29 +157,22 @@ void SCAM::ConditionVisitorSVA::visit(BoolValue &node) {
         this->ss << "0";
 }
 
-void SCAM::ConditionVisitorSVA::visit(EnumValue &node) {
-    std::locale loc;
-    std::string str = node.getEnumValue();
-    for (char i : str)
-        this->ss << std::tolower(i,loc);
-}
-
 void SCAM::ConditionVisitorSVA::visit(Logical &node) {
     this->ss << "(";
     node.getLhs()->accept(*this);
 
     this->ss << " ";
-    if(node.getOperation()=="and"){
+    if (node.getOperation() == "and") {
         this->ss << "&&";
-    }else if (node.getOperation()=="nand"){
+    } else if (node.getOperation() == "nand") {
         this->ss << "nand";
-    }else if (node.getOperation()=="or"){
+    } else if (node.getOperation() == "or") {
         this->ss << "||";
-    }else if (node.getOperation()=="nor"){
+    } else if (node.getOperation() == "nor") {
         this->ss << "nor";
-    }else if (node.getOperation()=="xor") {
+    } else if (node.getOperation() == "xor") {
         this->ss << "^";
-    }else if (node.getOperation()=="xnor"){
+    } else if (node.getOperation() == "xnor") {
         this->ss << "xnor";
     }
     this->ss << " ";
@@ -198,9 +182,9 @@ void SCAM::ConditionVisitorSVA::visit(Logical &node) {
 }
 
 void SCAM::ConditionVisitorSVA::visit(UnaryExpr &node) {
-    if(node.getOperation() == "not"){
+    if (node.getOperation() == "not") {
         this->ss << "!";
-    }else if (node.getOperation() == "-"){
+    } else if (node.getOperation() == "-") {
         this->ss << node.getOperation();
     }
     this->ss << "(";
@@ -209,12 +193,23 @@ void SCAM::ConditionVisitorSVA::visit(UnaryExpr &node) {
 }
 
 
-
 std::string SCAM::ConditionVisitorSVA::toString(SCAM::Stmt *stmt, unsigned int indentSize, unsigned int indentOffset) {
     ConditionVisitorSVA printer;
     return printer.createString(stmt, indentSize, indentOffset);
 }
 
+void SCAM::ConditionVisitorSVA::visit(SCAM::Notify &node) {
+    this->ss << node.getPort()->getName() << "_notify()";
+}
 
-
+void SCAM::ConditionVisitorSVA::visit(SCAM::ParamOperand &node) {
+    if (node.getParameter()->isSubVar()) {
+        this->ss << node.getParameter()->getParent()->getName();
+        this->ss << "_";
+        this->ss << node.getParameter()->getName();
+    } else {
+        this->ss << node.getOperandName();
+    }
+    useParenthesesFlag = true;
+}
 

@@ -28,11 +28,13 @@ protected:
     virtual void visit(class UnaryExpr &node);
     virtual void visit(class Assignment &node);
     virtual void visit(class Logical &node);
-    virtual void visit(class EnumValue &node);
     virtual void visit(class CompoundExpr &node);
+    virtual void visit(class Notify &node);
+    virtual void visit(class ParamOperand &node);
 
     bool resize_flag=false;
 };
+
 
 }
 

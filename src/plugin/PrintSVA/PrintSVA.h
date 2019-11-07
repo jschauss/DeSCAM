@@ -8,38 +8,54 @@
 #include <PluginFactory.h>
 #include <sstream>
 #include "Model.h"
-#include <PropertyFactory.h>
 
-    class PrintSVA : public PluginFactory {
+class PrintSVA : public PluginFactory {
 
-    public:
-        PrintSVA() = default;
-        ~PrintSVA() = default;
+public:
+    PrintSVA() = default;
 
-        std::map<std::string, std::string> printModel(Model *node);
-    private:
-        std::stringstream ss;
+    ~PrintSVA() = default;
 
-        ////////////////
-        std::string Text_ipc();
-        std::string Text_body();
-        void optimizeCommunicationFSM();
-        inline int getOpCnt(std::map<int, State *> stateMap);
-        SCAM::Module *module;
-        std::set<Port*> usedPortsList;
-        std::map<int, State *> stateMap;
-        std::map<std::string ,SCAM::Variable*> stateVarMap;
+    std::map<std::string, std::string> printModel(Model *node);
 
-        std::string functions();
-        std::string signals();
-        std::string registers();
-        std::string states();
-        std::string reset_sequence();
-        std::string reset_operation();
-        std::string operations();
-        std::string wait_operations();
-        std::string convertDataType(DataType* dataTypeName);
-        std::string location(bool loc);
-        std::string tolower(std::string str);
-    };
+    std::map<std::string, std::string> printModule(SCAM::Module *node);
+
+private:
+    std::stringstream ss;
+    SCAM::Module *module;
+
+    ////////////////
+    std::string Text_ipc();
+
+    std::string Text_body();
+
+    std::string functions();
+
+    std::string dataTypes();
+
+    std::string signals();
+
+    std::string registers();
+
+    std::string states();
+
+    std::string reset_sequence();
+
+    std::string reset_operation();
+
+    std::string operations();
+
+    std::string wait_operations();
+
+    std::string convertDataType(DataType *dataTypeName);
+
+    std::string convertDataTypeFunction(std::string dataTypeName);
+
+    std::string convertDataTypeProperty(std::string dataTypeName);
+
+    std::string location(bool loc);
+
+    std::string tolower(std::string str);
+};
+
 #endif //SCAM_PRINTSVA_H

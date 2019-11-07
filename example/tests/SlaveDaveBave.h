@@ -10,51 +10,40 @@
 #include "systemc.h"
 #include "../Interfaces/Interfaces.h"
 
-struct TestBasic0 : public sc_module {
-    //Sections
-    enum Sections {
-        SECTION_A, SECTION_B
-    };
+SC_MODULE(SlaveTest)
+{
+	slave_in<int> test_in;
+	slave_out<int> test_out;
+	enum Sections{S_A, S_B};
+	Sections section, nextsection;
 
-    Sections section;
-    Sections nextsection;
+	int val;
 
-
-    //Constructor
-    SC_HAS_PROCESS(TestBasic0);
-
-    TestBasic0(sc_module_name name) :
-            port_out("b_out"),
-            port_in("b_out"),
-            section(SECTION_A),
-            nextsection(SECTION_A) {
-        SC_THREAD(fsm);
-    }
-
-    //Out-port
-    blocking_out<int> port_out;
-    blocking_in<int> port_in;
-
-    //
-    int var,cnt,result;
-
-
-    void fsm() {
-        while (true) {
-            section = nextsection;
-            if (section == SECTION_A) {
-                port_in->read(var);
-                ++var;
-                ++cnt;
-                result = var+ cnt;
-                port_out->write(result);
-                nextsection = SECTION_B;
-            }
-            if (section == SECTION_B) {
-                nextsection = SECTION_A;
-            }
-        }
-    }
+	SC_CTOR(SlaveTest):
+		test_in("test_in"),
+		test_out("test_out"),
+		nextsection(S_A),
+		val(0)
+	{
+		SC_THREAD(fsm);
+	}
+	void fsm()
+	{
+		while(true)
+		{
+			section = nextsection;
+			if (section == S_A)
+			{
+				test_in->nb_read(val);
+				test_out->nb_write(val);
+				nextsection = S_B;
+			}
+			if (section == S_B)
+			{
+				nextsection = S_A;
+			}
+		}
+	}
 };
 
 

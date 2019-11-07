@@ -1,5 +1,5 @@
 //
-// Created by Nawras Altaleb (nawras.altaleb89@gmail.com) on 17.04.18.
+// Created by deutschmann on 9/26/19.
 //
 
 #include "DatapathVisitorSVA.h"
@@ -7,7 +7,7 @@
 
 void SCAM::DatapathVisitorSVA::visit(SCAM::VariableOperand &node) {
     if (node.getVariable()->isSubVar()) {
-        this->ss << node.getVariable()->getParent()->getName() <<"_"  << node.getVariable()->getName();
+        this->ss << node.getVariable()->getParent()->getName() << "_" << node.getVariable()->getName();
     } else {
         this->ss << node.getVariable()->getName();
     }
@@ -30,10 +30,11 @@ void SCAM::DatapathVisitorSVA::visit(BoolValue &node) {
 }
 
 void SCAM::DatapathVisitorSVA::visit(EnumValue &node) {
-    std::locale loc;
+/*    std::locale loc;
     std::string str = node.getEnumValue();
     for (char i : str)
-        this->ss << std::tolower(i,loc);
+        this->ss << std::tolower(i, loc);*/
+    this->ss << node.getEnumValue();
 }
 
 void SCAM::DatapathVisitorSVA::visit(SCAM::Assignment &node) {
@@ -60,17 +61,17 @@ void SCAM::DatapathVisitorSVA::visit(Logical &node) {
     node.getLhs()->accept(*this);
 
     this->ss << " ";
-    if(node.getOperation()=="and"){
+    if (node.getOperation() == "and") {
         this->ss << "&&";
-    }else if (node.getOperation()=="nand"){
+    } else if (node.getOperation() == "nand") {
         this->ss << "nand";
-    }else if (node.getOperation()=="or"){
+    } else if (node.getOperation() == "or") {
         this->ss << "||";
-    }else if (node.getOperation()=="nor"){
+    } else if (node.getOperation() == "nor") {
         this->ss << "nor";
-    }else if (node.getOperation()=="xor") {
+    } else if (node.getOperation() == "xor") {
         this->ss << "^";
-    }else if (node.getOperation()=="xnor"){
+    } else if (node.getOperation() == "xnor") {
         this->ss << "xnor";
     }
     this->ss << " ";
@@ -82,9 +83,9 @@ void SCAM::DatapathVisitorSVA::visit(Logical &node) {
 void SCAM::DatapathVisitorSVA::visit(SCAM::Relational &node) {
     this->ss << "(";
     node.getLhs()->accept(*this);
-    if(node.getOperation() == "=="){
+    if (node.getOperation() == "==") {
         this->ss << " == ";
-    }else{
+    } else {
         this->ss << " " << node.getOperation() << " ";
     }
     node.getRhs()->accept(*this);
@@ -121,9 +122,9 @@ void SCAM::DatapathVisitorSVA::visit(SCAM::Bitwise &node) {
 }
 
 void SCAM::DatapathVisitorSVA::visit(UnaryExpr &node) {
-    if(node.getOperation() == "not"){
+    if (node.getOperation() == "not") {
         this->ss << "!";
-    }else if (node.getOperation() == "-"){
+    } else if (node.getOperation() == "-") {
         this->ss << node.getOperation();
     }
     this->ss << "(";
@@ -158,7 +159,7 @@ void SCAM::DatapathVisitorSVA::visit(SCAM::CompoundExpr &node) {
     auto valueMap = node.getValueMap();
     for (auto begin = valueMap.begin(); begin != valueMap.end(); ++begin) {
         begin->second->accept(*this);
-        if(begin != --valueMap.end()) this->ss << ",";
+        if (begin != --valueMap.end()) this->ss << ",";
     }
 }
 
@@ -167,7 +168,7 @@ void SCAM::DatapathVisitorSVA::visit(SCAM::CompoundValue &node) {
     for (auto iterator = node.getValues().begin(); iterator != node.getValues().end(); ++iterator) {
         (*iterator).second->accept(*this);
 
-        if(iterator != (node.getValues().end()--)) this->ss << ",";
+        if (iterator != (node.getValues().end()--)) this->ss << ",";
     }
 }
 
@@ -175,7 +176,3 @@ std::string SCAM::DatapathVisitorSVA::toString(SCAM::Stmt *stmt, unsigned int in
     DatapathVisitorSVA printer;
     return printer.createString(stmt, indentSize, indentOffset);
 }
-
-
-
-

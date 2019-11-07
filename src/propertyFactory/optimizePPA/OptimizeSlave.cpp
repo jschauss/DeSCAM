@@ -62,6 +62,7 @@ void SCAM::OptimizeSlave::cleanUpStateMap() {
  *
  */
 bool SCAM::OptimizeSlave::allSlavesUsed() const {
+
     for (auto port: module->getPorts()) {
         if (!port.second->getInterface()->isSlave()) continue;
         bool isCorrect = false;
