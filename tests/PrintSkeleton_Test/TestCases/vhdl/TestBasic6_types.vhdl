@@ -1,6 +1,6 @@
 library ieee;
 use IEEE.numeric_std.all;
+use work.SCAM_Model_types.all;
 
 package TestBasic6_types is
-type TestBasic6_SECTIONS is (run);
 end package TestBasic6_types;

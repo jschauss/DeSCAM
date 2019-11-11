@@ -6,6 +6,7 @@
 
 #include <PrintStmt.h>
 #include <math.h>
+#include <ModelGlobal.h>
 #include "PrintSkeleton.h"
 
 std::map<std::string, std::string> PrintSkeleton::printModel(Model *node) {
@@ -31,13 +32,13 @@ std::map<std::string, std::string> PrintSkeleton::printModel(Model *node) {
     }
 
 
-
-
     return pluginOutput;
 }
 
-std::pair<std::string, std::string> PrintSkeleton::printModule(SCAM::Module* module) {
+std::pair<std::string, std::string> PrintSkeleton::printModule(SCAM::Module *module) {
     setLanguage();
+
+    globalPackageName = ModelGlobal::getModel()->getName();
 
     this->module = module;
     localPackageName = module->getName();
@@ -52,7 +53,7 @@ std::pair<std::string, std::string> PrintSkeleton::printModule(SCAM::Module* mod
     return std::make_pair(module->getName() + getFilenameExtention(), result.str());
 }
 
-std::pair<std::string, std::string> PrintSkeleton::printLocalTypes(SCAM::Module* module) {
+std::pair<std::string, std::string> PrintSkeleton::printLocalTypes(SCAM::Module *module) {
     setLanguage();
 
     this->module = module;
@@ -61,7 +62,7 @@ std::pair<std::string, std::string> PrintSkeleton::printLocalTypes(SCAM::Module*
     return std::make_pair(localPackageName + "_types" + getFilenameExtention(), generateLocalTypes());
 }
 
-std::pair<std::string, std::string> PrintSkeleton::printGlobalTypes(SCAM::Model* model) {
+std::pair<std::string, std::string> PrintSkeleton::printGlobalTypes(SCAM::Model *model) {
     setLanguage();
     globalPackageName = model->getName();
 
@@ -82,8 +83,9 @@ void PrintSkeleton::setLanguage() {
     }
 
 }
+
 std::string PrintSkeleton::generateLocalTypes() {
-    //TODO: implement when local types can be distinguished from global types
+
     std::stringstream typeStream;
 
     printPackageHeader(typeStream, localPackageName);
@@ -97,25 +99,25 @@ std::string PrintSkeleton::generateLocalTypes() {
         }
         typeStream << "No local datatypes implemented!\n\n\n";
     } else {
-				if (DataTypes::hasLocalDataTypes(module->getName())) {
-					  // There is a map for this module
-						if (!DataTypes::getLocalDataTypes(module->getName()).empty()) {
-      				  for (auto type: DataTypes::getLocalDataTypes(module->getName())) {
-      				      if (type.second->isEnumType()) {
-      				          printEnumType(typeStream, type.second);
-      				      }
-      				  }
-      				  // Local composite types
-      				  for (auto type: DataTypes::getLocalDataTypes(module->getName())) {
-      				      if (type.second->isCompoundType()) {
-      				          printCompoundType(typeStream, type.second);
-      				      }
-      				      if (type.second->isArrayType()) {
-      				          printArrayType(typeStream, type.second);
-      				      }
-      				  }
-						}
-				}
+        if (DataTypes::hasLocalDataTypes(module->getName())) {
+            // There is a map for this module
+            if (!DataTypes::getLocalDataTypes(module->getName()).empty()) {
+                for (auto type: DataTypes::getLocalDataTypes(module->getName())) {
+                    if (type.second->isEnumType()) {
+                        printEnumType(typeStream, type.second);
+                    }
+                }
+                // Local composite types
+                for (auto type: DataTypes::getLocalDataTypes(module->getName())) {
+                    if (type.second->isCompoundType()) {
+                        printCompoundType(typeStream, type.second);
+                    }
+                    if (type.second->isArrayType()) {
+                        printArrayType(typeStream, type.second);
+                    }
+                }
+            }
+        }
     }
     printPackageFooter(typeStream, localPackageName);
     return typeStream.str();
@@ -173,11 +175,11 @@ std::string PrintSkeleton::generateHDLSkeleton() {
 
 }
 
-void PrintSkeleton::printEnumType(std::stringstream& ss, const SCAM::DataType* enumType) {
+void PrintSkeleton::printEnumType(std::stringstream &ss, const SCAM::DataType *enumType) {
     if (language == VHDL) {
         ss << "type " + enumType->getName() << " is (";
         for (auto iterator = enumType->getEnumValueMap().begin();
-            iterator != enumType->getEnumValueMap().end(); ++iterator) {
+             iterator != enumType->getEnumValueMap().end(); ++iterator) {
             ss << iterator->first;
             if (iterator != --enumType->getEnumValueMap().end()) {
                 ss << ", ";
@@ -194,8 +196,7 @@ void PrintSkeleton::printEnumType(std::stringstream& ss, const SCAM::DataType* e
         }
         ss << "{\n";
         for (auto iterator = enumType->getEnumValueMap().begin();
-            iterator != enumType->getEnumValueMap().end(); ++iterator)
-        {
+             iterator != enumType->getEnumValueMap().end(); ++iterator) {
             ss << "\t\t" + convertToLower(iterator->first);
             if (iterator != --enumType->getEnumValueMap().end()) {
                 ss << ",\n";
@@ -207,7 +208,7 @@ void PrintSkeleton::printEnumType(std::stringstream& ss, const SCAM::DataType* e
     }
 }
 
-void PrintSkeleton::printCompoundType(std::stringstream& ss, const SCAM::DataType* compoundType) {
+void PrintSkeleton::printCompoundType(std::stringstream &ss, const SCAM::DataType *compoundType) {
     if (language == VHDL) {
         ss << "type " + compoundType->getName() << " is record\n";
         for (auto subVar: compoundType->getSubVarMap()) {
@@ -223,28 +224,31 @@ void PrintSkeleton::printCompoundType(std::stringstream& ss, const SCAM::DataTyp
     }
 }
 
-void PrintSkeleton::printArrayType(std::stringstream& ss, const SCAM::DataType* arrayType) {
+void PrintSkeleton::printArrayType(std::stringstream &ss, const SCAM::DataType *arrayType) {
     if (language == VHDL) {
-        ss << "type " + arrayType->getName() << " is array(" << arrayType->getArraySize()-1 << " downto 0) of ";
-        ss <<  arrayType->getArrayType()->getName() << ";\n";
+        ss << "type " + arrayType->getName() << " is array(" << arrayType->getArraySize() - 1 << " downto 0) of ";
+        ss << arrayType->getArrayType()->getName() << ";\n";
     } else if (language == SV) {
         ss << "\ttypedef " << getDataTypeWrapper(arrayType->getArrayType()) << " " << arrayType->getName();
-        ss << " [0:" << arrayType->getArraySize()-1 << "];\n\n";
+        ss << " [0:" << arrayType->getArraySize() - 1 << "];\n\n";
     }
 }
 
-void PrintSkeleton::printPackageHeader(std::stringstream& ss, const std::string& packageName) {
+void PrintSkeleton::printPackageHeader(std::stringstream &ss, const std::string &packageName) {
 
     if (language == VHDL) {
-        ss << "library ieee;\n" ;
-        ss << "use IEEE.numeric_std.all;\n\n";
+        ss << "library ieee;\n";
+        ss << "use IEEE.numeric_std.all;\n";
+        ss << "use work.SCAM_Model_types.all;\n\n";
         ss << "package " + packageName << "_types is\n";
     } else if (language == SV) {
         ss << "package " + convertToLower(packageName) << "_types;\n\n";
+        ss << "\timport scam_model_types::*;\n";
+
     }
 }
 
-void PrintSkeleton::printPackageFooter(std::stringstream& ss, const std::string& packageName) {
+void PrintSkeleton::printPackageFooter(std::stringstream &ss, const std::string &packageName) {
     if (language == VHDL) {
         ss << "end package " + packageName + "_types;";
     } else {
@@ -253,7 +257,7 @@ void PrintSkeleton::printPackageFooter(std::stringstream& ss, const std::string&
 }
 
 
-void PrintSkeleton::header(std::stringstream& ss) {
+void PrintSkeleton::header(std::stringstream &ss) {
     if (language == VHDL) {
         ss << "library ieee;\n";
         ss << "use ieee.std_logic_1164.all;\n";
@@ -267,7 +271,7 @@ void PrintSkeleton::header(std::stringstream& ss) {
 }
 
 
-void PrintSkeleton::ports(std::stringstream& ss) {
+void PrintSkeleton::ports(std::stringstream &ss) {
     std::string syncNotifyType;
     std::string clockResetType;
     if (language == VHDL) {
@@ -297,7 +301,8 @@ void PrintSkeleton::ports(std::stringstream& ss) {
         //Data signal
         bool last = (port == --module->getPorts().end());
 
-        insertPortVariable(ss, name, direction, type, last && (interface->isShared() || interface->isSlaveOut() || interface->isMasterIn()));
+        insertPortVariable(ss, name, direction, type,
+                           last && (interface->isShared() || interface->isSlaveOut() || interface->isMasterIn()));
 
         //Synch signals
         if (interface->isBlocking()) {
@@ -318,17 +323,17 @@ void PrintSkeleton::ports(std::stringstream& ss) {
 }
 
 
-void PrintSkeleton::registers(std::stringstream& ss) {
+void PrintSkeleton::registers(std::stringstream &ss) {
 
     if (language == VHDL) {
         ss << "architecture " + module->getName() << "_arch of " + module->getName() + " is\n";
     }
-    insertRegister(ss, "section", module->getName() + "_SECTIONS");
     for (auto variable: module->getVariableMap()) {
         insertRegister(ss, variable.first + "_signal", getDataTypeWrapper(variable.second->getDataType()));
     }
 }
-void PrintSkeleton::resetLogic(std::stringstream& ss) {
+
+void PrintSkeleton::resetLogic(std::stringstream &ss) {
 
     if (language == VHDL) {
         ss << "\nbegin\n";
@@ -343,7 +348,6 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
 
     int nonblockingIndentationLevel = 3;
 
-    insertNonblockingAssignment(ss, "section", module->getFSM()->getInitialSection(), nonblockingIndentationLevel);
 
     for (auto variable: module->getVariableMap()) {
         if (variable.second->getDataType()->isCompoundType()) {
@@ -356,16 +360,15 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
                         resetValue = convertToLower(PrintStmt::toString(subVar->getInitialValue()));
                     }
                 } else if (language == VHDL) {
-                    if (subVar->getDataType()->getName() == "signed"){
+                    if (subVar->getDataType()->getName() == "signed") {
                         resetValue = "(others <= " + PrintStmt::toString(subVar->getInitialValue()) + ")";
                     } else if (subVar->getDataType()->isUnsigned()) {
                         resetValue = "to_unsigned(" + PrintStmt::toString(subVar->getInitialValue()) + ", 32)";
                     } else if (subVar->getDataType()->isInteger()) {
                         resetValue = "to_signed(" + PrintStmt::toString(subVar->getInitialValue()) + ", 32)";
                     } else if (subVar->isArrayType()) {
-                        resetValue = "(others <= to_signed(0, 32)";
-                    }
-                    else {
+                        resetValue = "(others => to_signed(0, 32)";
+                    } else {
                         resetValue = PrintStmt::toString(subVar->getInitialValue());
                     }
                 }
@@ -373,14 +376,15 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
                 //                            variable.first + "_signal." + subVar->getName(),
                 //                            PrintStmt::toString(subVar->getInitialValue()),
                 //                            nonblockingIndentationLevel);
-                insertNonblockingAssignment(ss, variable.first + "_signal." + subVar->getName(), resetValue, nonblockingIndentationLevel);
+                insertNonblockingAssignment(ss, variable.first + "_signal." + subVar->getName(), resetValue,
+                                            nonblockingIndentationLevel);
             }
 
         } else if (variable.second->isArrayType()) {
-            if(variable.second->getDataType()->getArrayType()->isInteger()){
+            if (variable.second->getDataType()->getArrayType()->isInteger()) {
                 std::string arrayDefaultValue;
                 if (language == VHDL) {
-                    arrayDefaultValue = "(others <= to_signed(0, 32))";
+                    arrayDefaultValue = "(others => to_signed(0, 32))";
                 } else if (language == SV) {
                     arrayDefaultValue = "'{default:0}";
                 }
@@ -400,14 +404,13 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
                     resetValue = convertToLower(PrintStmt::toString(variable.second->getInitialValue()));
                 }
             } else if (language == VHDL) {
-                if (variable.second->getDataType()->getName() == "signed"){
-                    resetValue = "(others <= " + PrintStmt::toString(variable.second->getInitialValue()) + ")";
+                if (variable.second->getDataType()->getName() == "signed") {
+                    resetValue = "(others => " + PrintStmt::toString(variable.second->getInitialValue()) + ")";
                 } else if (variable.second->getDataType()->isUnsigned()) {
-                      resetValue = "to_unsigned(" + PrintStmt::toString(variable.second->getInitialValue()) + ", 32)";
+                    resetValue = "to_unsigned(" + PrintStmt::toString(variable.second->getInitialValue()) + ", 32)";
                 } else if (variable.second->getDataType()->isInteger()) {
                     resetValue = "to_signed(" + PrintStmt::toString(variable.second->getInitialValue()) + ", 32)";
-                }
-                else {
+                } else {
                     resetValue = PrintStmt::toString(variable.second->getInitialValue());
                 }
             }
@@ -416,7 +419,7 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
 
     }
     //Notify signals for ports
-    auto opList = module->getFSM()->getStateMap().at(-1)->getOutgoingOperationList();
+    auto opList = module->getFSM()->getStateMap().at(0)->getOutgoingOperationsList();
     assert(opList.size() == 1);
     for (auto port: module->getPorts()) {
         // interfaces without notify signals
@@ -425,7 +428,7 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
         if (port.second->getInterface()->isSlaveIn()) continue;
         if (port.second->getInterface()->isSlaveOut()) continue;
         // interfaces with notify signals
-        if (opList.at(0)->getNextState()->getCommPort() == port.second) {
+        if (opList.at(0)->getNextState()->getCommunicationPort() == port.second) {
             insertNonblockingAssignment(ss, port.first + "_notify", booleanWrapper(true), nonblockingIndentationLevel);
         } else {
             insertNonblockingAssignment(ss, port.first + "_notify", booleanWrapper(false), nonblockingIndentationLevel);
@@ -436,18 +439,13 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
     } else if (language == SV) {
         ss << "\t\tend else begin\n";
     }
-    auto section_list = module->getFSM()->getSectionList();
-    for (auto &&section : section_list) {
-        if (language == VHDL) {
-            ss << "\t\t\tif section = " + section + " then\n";
-            ss << "\t\t\t -- FILL OUT HERE;\n";
-            ss << "\t\t\tend if;\n";
-        } else if (language == SV) {
-            ss << "\t\t\tif (section == " + convertToLower(section) + ") begin\n";
-            ss << "\t\t\t\t// FILL OUT HERE\n";
-            ss << "\t\t\tend\n";
-        }
+
+    if (language == VHDL) {
+        ss << "\t\t\t -- FILL OUT HERE;\n";
+    } else if (language == SV) {
+        ss << "\t\t\t\t// FILL OUT HERE\n";
     }
+
     if (language == VHDL) {
         ss << "\t\tend if;\n";
         ss << "\tend if;\n";
@@ -458,7 +456,8 @@ void PrintSkeleton::resetLogic(std::stringstream& ss) {
     }
 
 }
-void PrintSkeleton::footer(std::stringstream& ss) {
+
+void PrintSkeleton::footer(std::stringstream &ss) {
     if (language == VHDL) {
         ss << "end " + module->getName() << "_arch;";
     } else if (language == SV) {
@@ -466,7 +465,7 @@ void PrintSkeleton::footer(std::stringstream& ss) {
     }
 }
 
-void PrintSkeleton::insertImport(std::stringstream& ss, const std::string& name) {
+void PrintSkeleton::insertImport(std::stringstream &ss, const std::string &name) {
     if (language == VHDL) {
         ss << "use work." + name + ".all;\n";
     } else if (language == SV) {
@@ -474,10 +473,10 @@ void PrintSkeleton::insertImport(std::stringstream& ss, const std::string& name)
     }
 }
 
-void PrintSkeleton::insertPortVariable(std::stringstream& ss,
-                                       const std::string& name,
-                                       const std::string& direction,
-                                       const std::string& type,
+void PrintSkeleton::insertPortVariable(std::stringstream &ss,
+                                       const std::string &name,
+                                       const std::string &direction,
+                                       const std::string &type,
                                        bool last) {
     ss << "\t";
 
@@ -489,13 +488,13 @@ void PrintSkeleton::insertPortVariable(std::stringstream& ss,
     } else if (language == SV) {
         ss << direction + " " + type + " " + name;
         if (!last) {
-           ss << ",";
+            ss << ",";
         }
     }
     ss << "\n";
 }
 
-void PrintSkeleton::insertRegister(std::stringstream& ss, const std::string& name, const std::string& type) {
+void PrintSkeleton::insertRegister(std::stringstream &ss, const std::string &name, const std::string &type) {
 
     if (language == VHDL) {
         ss << "\tsignal " + name + ": " + type + ";\n";
@@ -504,7 +503,8 @@ void PrintSkeleton::insertRegister(std::stringstream& ss, const std::string& nam
     }
 }
 
-void PrintSkeleton::insertNonblockingAssignment(std::stringstream& ss, const std::string& name, const std::string& defaultValue, int indentation) {
+void PrintSkeleton::insertNonblockingAssignment(std::stringstream &ss, const std::string &name,
+                                                const std::string &defaultValue, int indentation) {
     for (int i = 0; i < indentation; i++) {
         ss << "\t";
     }
@@ -520,27 +520,29 @@ void PrintSkeleton::insertNonblockingAssignment(std::stringstream& ss, const std
 
 std::string PrintSkeleton::getFilenameExtention() {
     switch (language) {
-        case VHDL: return ".vhdl";
-        case SV: return ".sv";
+        case VHDL:
+            return ".vhdl";
+        case SV:
+            return ".sv";
     }
 }
 
-std::string PrintSkeleton::convertToLower(const std::string& in_string) {
+std::string PrintSkeleton::convertToLower(const std::string &in_string) {
     std::locale loc; // for return type to be in lowercase
     std::stringstream ret;
     for (char i : in_string)
-        ret << std::tolower(i,loc);
+        ret << std::tolower(i, loc);
     return ret.str();
 }
 
 int PrintSkeleton::getLog2(int arraySize) {
     if (arraySize > 2) {
-        return (int) ceil(log2(arraySize)-1.0);
+        return (int) ceil(log2(arraySize) - 1.0);
     }
     return 0;
 }
 
-std::string PrintSkeleton::getDirectionWrapper(const std::string& in) {
+std::string PrintSkeleton::getDirectionWrapper(const std::string &in) {
     if (language == SV) {
         if (in == "in") return "input";
         return "output";
@@ -549,20 +551,20 @@ std::string PrintSkeleton::getDirectionWrapper(const std::string& in) {
     }
 }
 
-std::string PrintSkeleton::getDataTypeWrapper(const SCAM::DataType* dataType) {
+std::string PrintSkeleton::getDataTypeWrapper(const SCAM::DataType *dataType) {
     if (language == SV) {
         if (dataType->isInteger()) {
             return "integer";
         } else if (dataType->isUnsigned()) {
-            return "integer unsigned";
+            return "bit[31:0]";
         } else if (dataType->getName() == "bool") {
-            return "logic";
-        } else { 
+            return "bit";
+        } else {
             return dataType->getName();
         }
     } else {
         if (dataType->isInteger()) {
-        //if (variable.second->getDataType()->getName() == "unsigned" || variable.second->getDataType()->getName() == "signed") {
+            //if (variable.second->getDataType()->getName() == "unsigned" || variable.second->getDataType()->getName() == "signed") {
             //return "signed (31 downto 0)";
             return "int";
         } else if (dataType->isUnsigned()) {

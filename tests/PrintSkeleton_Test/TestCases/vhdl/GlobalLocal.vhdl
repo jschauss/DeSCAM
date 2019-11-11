@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use IEEE.numeric_std.all; 
+use work.SCAM_Model_types.all;
 use work.GlobalLocal_types.all;
 
 entity GlobalLocal is
@@ -17,7 +18,6 @@ port(
 end GlobalLocal;
 
 architecture GlobalLocal_arch of GlobalLocal is
-	signal section: GlobalLocal_SECTIONS;
 	signal bool_var_signal: bool;
 	signal gct_signal: global_compound_type;
 	signal ge_signal: global_enum;
@@ -33,7 +33,6 @@ begin
 	begin
 	if(clk='1' and clk'event) then
 		if rst = '1' then
-			section <= run;
 			bool_var_signal <= false;
 			gct_signal.b <= false;
 			gct_signal.w <= to_unsigned(0, 32);
@@ -45,13 +44,11 @@ begin
 			lct_signal.y <= false;
 			le_signal <= X;
 			lec_signal <= D;
-			local_array_signal <= (others <= to_signed(0, 32));
+			local_array_signal <= (others => to_signed(0, 32));
 			b_in_notify <= true;
 			b_out_notify <= false;
 		else
-			if section = run then
 			 -- FILL OUT HERE;
-			end if;
 		end if;
 	end if;
 	end process;

@@ -15,8 +15,12 @@ struct global_compound_type {
     bool b;
 };
 
-enum global_enum{A,B};
-enum class global_enum_class{M,N};
+enum global_enum {
+    A, B
+};
+enum class global_enum_class {
+    M, N
+};
 
 
 struct GlobalLocal : public sc_module {
@@ -27,14 +31,18 @@ struct GlobalLocal : public sc_module {
 
     SC_HAS_PROCESS(GlobalLocal);
 
-    GlobalLocal(sc_module_name name):
+    GlobalLocal(sc_module_name name) :
             b_in("b_in"),
-            b_out("b_out"){
+            b_out("b_out") {
         SC_THREAD(fsm);
     }
 
-    enum local_enum{X,Y};
-    enum class local_enum_class{D,E};
+    enum local_enum {
+        X, Y
+    };
+    enum class local_enum_class {
+        D, E
+    };
 
     struct local_compound_type {
         int x;
@@ -57,25 +65,24 @@ struct GlobalLocal : public sc_module {
 
     void fsm() {
         while (true) {
-          b_in->read(int_var);
-          int_var=int_var+1;
-          if(le == X){
-              local_array[0] = int_var+1;
-          }else if(lec == local_enum_class::D){
-              local_array[1] = int_var+1;
-          }else if( ge == A){
-              local_array[1] = local_array[2];
-          }else if( gec == global_enum_class::M){
-              local_array[4] = 0;
-              gct.w = 5;
-          }
-          local_array[1] = local_array[0];
-          b_out->write(int_var);
+            b_in->read(int_var);
+            int_var = int_var + 1;
+            if (le == X) {
+                local_array[0] = int_var + 1;
+            } else if (lec == local_enum_class::D) {
+                local_array[1] = int_var + 1;
+            } else if (ge == A) {
+                local_array[1] = local_array[2];
+            } else if (gec == global_enum_class::M) {
+                local_array[4] = 0;
+                gct.w = 5;
+            }
+            local_array[1] = local_array[0];
+            b_out->write(int_var);
 
         }
     }
 };
-
 
 
 #endif //PROJECT_SLAVEDAVEBAVE_H_H

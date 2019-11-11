@@ -1,7 +1,4 @@
 package testbasic9_types;
 
-	typedef enum logic {
-		run
-	} TestBasic9_SECTIONS;
-
+	import scam_model_types::*;
 endpackage

@@ -1,3 +1,4 @@
+import scam_model_types::*;
 import globallocal_types::*;
 
 module GlobalLocal (
@@ -11,8 +12,7 @@ module GlobalLocal (
 	output logic b_out_notify
 	);
 
-	GlobalLocal_SECTIONS section;
-	logic bool_var_signal;
+	bit bool_var_signal;
 	global_compound_type gct_signal;
 	global_enum ge_signal;
 	global_enum_class gec_signal;
@@ -25,7 +25,6 @@ module GlobalLocal (
 
 	always_ff @(posedge clk, posedge rst) begin
 		if (rst) begin
-			section <= run;
 			bool_var_signal <= 1'b0;
 			gct_signal.b <= 1'b0;
 			gct_signal.w <= 0;
@@ -41,9 +40,7 @@ module GlobalLocal (
 			b_in_notify <= 1'b1;
 			b_out_notify <= 1'b0;
 		end else begin
-			if (section == run) begin
 				// FILL OUT HERE
-			end
 		end
 	end
 endmodule

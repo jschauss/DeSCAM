@@ -1,5 +1,6 @@
 library ieee;
 use IEEE.numeric_std.all;
+use work.SCAM_Model_types.all;
 
 package SCAM_Model_types is
 subtype bool is Boolean;
@@ -16,6 +17,7 @@ type global_compound_type is record
 	b: bool;
 	w: unsigned (31 downto 0);
 end record;
+type int_2 is array(1 downto 0) of int;
 type int_5 is array(4 downto 0) of int;
 type record_t is record
 	x: int;

@@ -1,5 +1,6 @@
 package scam_model_types;
 
+	import scam_model_types::*;
 	typedef enum logic {
 		read,
 		write
@@ -18,24 +19,26 @@ package scam_model_types;
 	typedef struct {
 		Mode mode;
 		integer x;
-		logic y;
+		bit y;
 	} CompoundType;
 
 	typedef struct {
-		logic b;
-		integer unsigned w;
+		bit b;
+		bit[31:0] w;
 	} global_compound_type;
+
+	typedef integer int_2 [0:1];
 
 	typedef integer int_5 [0:4];
 
 	typedef struct {
 		integer x;
-		integer unsigned y;
+		bit[31:0] y;
 	} record_t;
 
 	typedef struct {
 		integer x;
-		integer unsigned y;
+		bit[31:0] y;
 	} test_compound;
 
 endpackage

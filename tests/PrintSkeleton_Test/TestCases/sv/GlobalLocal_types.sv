@@ -1,9 +1,6 @@
 package globallocal_types;
 
-	typedef enum logic {
-		run
-	} GlobalLocal_SECTIONS;
-
+	import scam_model_types::*;
 	typedef enum logic {
 		x,
 		y
@@ -17,7 +14,7 @@ package globallocal_types;
 	typedef struct {
 		global_enum fest;
 		integer x;
-		logic y;
+		bit y;
 	} local_compound_type;
 
 endpackage
