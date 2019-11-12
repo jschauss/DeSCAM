@@ -419,7 +419,8 @@ void PrintSkeleton::resetLogic(std::stringstream &ss) {
 
     }
     //Notify signals for ports
-    auto opList = module->getFSM()->getStateMap().at(0)->getOutgoingOperationsList();
+    auto opList = module->getFSM()->getStateMap().at(-1)->getOutgoingOperationList();
+
     assert(opList.size() == 1);
     for (auto port: module->getPorts()) {
         // interfaces without notify signals
@@ -428,7 +429,7 @@ void PrintSkeleton::resetLogic(std::stringstream &ss) {
         if (port.second->getInterface()->isSlaveIn()) continue;
         if (port.second->getInterface()->isSlaveOut()) continue;
         // interfaces with notify signals
-        if (opList.at(0)->getNextState()->getCommunicationPort() == port.second) {
+        if (opList.at(0)->getNextState()->getCommPort() == port.second) {
             insertNonblockingAssignment(ss, port.first + "_notify", booleanWrapper(true), nonblockingIndentationLevel);
         } else {
             insertNonblockingAssignment(ss, port.first + "_notify", booleanWrapper(false), nonblockingIndentationLevel);

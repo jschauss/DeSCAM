@@ -1,4 +1,3 @@
-import scam_model_types::*;
 import testbasic1_types::*;
 
 module TestBasic1 (
@@ -9,19 +8,22 @@ module TestBasic1 (
 	output logic b_in_notify
 	);
 
-	Sections nextsection_signal;
-	Sections section_signal;
+	TestBasic1_SECTIONS section;
 	integer x_signal;
 
 
 	always_ff @(posedge clk, posedge rst) begin
 		if (rst) begin
-			nextsection_signal <= section_a;
-			section_signal <= section_a;
+			section <= section_a;
 			x_signal <= 0;
 			b_in_notify <= 1'b1;
 		end else begin
+			if (section == section_a) begin
 				// FILL OUT HERE
+			end
+			if (section == section_b) begin
+				// FILL OUT HERE
+			end
 		end
 	end
 endmodule

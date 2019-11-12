@@ -1,6 +1,0 @@
-library ieee;
-use IEEE.numeric_std.all;
-use work.SCAM_Model_types.all;
-
-package TestArray5_types is
-end package TestArray5_types;

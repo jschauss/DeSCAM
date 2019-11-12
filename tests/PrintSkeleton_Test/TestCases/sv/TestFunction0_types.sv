@@ -1,4 +1,7 @@
 package testfunction0_types;
 
-	import scam_model_types::*;
+	typedef enum logic {
+		run
+	} TestFunction0_SECTIONS;
+
 endpackage

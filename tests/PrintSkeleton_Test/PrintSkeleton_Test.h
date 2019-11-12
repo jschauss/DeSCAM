@@ -12,11 +12,32 @@
 #include <PluginAction.h>
 #include <ModelGlobal.h>
 #include <fstream>
+#include <PrintAML/PrintAML.h>
+//#include <PrintITL/PrintITL.h>
+#include <PrintSkeleton/PrintSkeleton.h>
 #include <iostream>
 
-#include <PrintSkeleton/PrintSkeleton.h>
 
 static std::vector<SCAM::Module *> parameter() {
+
+/*    std::vector<const char *> commandLineArugmentsVector;
+
+    //Binaray
+    std::string bin = std::string(SCAM_HOME"/bin/SCAM ");
+    commandLineArugmentsVector.push_back(bin.c_str());
+
+    //SRC-File to be analyzed
+    std::string file_path = std::string(SCAM_HOME"/tests/PrintSkeleton_Test/TestCases/Tests.h");
+    commandLineArugmentsVector.push_back(file_path.c_str());
+
+    //Creates an instance of ModelFactory and calls ModelFactory::HandleTranslationUnit
+    const char *commandLineArgumentsArray[commandLineArugmentsVector.size()];
+    for (int i = 0; i < commandLineArugmentsVector.size(); i++) {
+        commandLineArgumentsArray[i] = commandLineArugmentsVector.at(i);
+    }
+    SCAM::ModelGlobal::createModel(commandLineArugmentsVector.size(), commandLineArgumentsArray[0],commandLineArgumentsArray[1]);
+
+    */
 
     std::vector<SCAM::Module *> result;
     for (auto module: SCAM::ModelGlobal::getModel()->getModules()) {
@@ -38,18 +59,26 @@ public:
     }
 
     virtual void SetUp() override {
+        std::cout << "Setting up..." << std::endl;
     }
 
     virtual void TearDown() {
     }
 
+    //std::vector<SCAM::Module *> getModules() {return result;}
+//private:
+    //std::vector<SCAM::Module *> result;
 };
 
+//INSTANTIATE_TEST_CASE(Basic, PrintSkeleton_Test);
+//TEST(PrintSkeleton_Test, GlobalTypes) {
 
+//}
 
 INSTANTIATE_TEST_CASE_P(Basic, PrintSkeleton_Test, ::testing::ValuesIn(parameter()));
 
-
+//TEST_P(PrintSkeleton_Test, GlobalTypes) {
+//}
 TEST_F(PrintSkeleton_Test, GlobalTypesVHDL) {
     CommandLineParameter::setPluginOptionParameter("PrintSkeleton", "vhdl", true);
     CommandLineParameter::setPluginOptionParameter("PrintSkeleton", "sv", false);

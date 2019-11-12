@@ -2,6 +2,10 @@ package globallocal_types;
 
 	import scam_model_types::*;
 	typedef enum logic {
+		run
+	} GlobalLocal_SECTIONS;
+
+	typedef enum logic {
 		x,
 		y
 	} local_enum;

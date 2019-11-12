@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use IEEE.numeric_std.all; 
-use work.SCAM_Model_types.all;
 use work.TestBasic3_types.all;
 
 entity TestBasic3 is
@@ -15,6 +14,7 @@ port(
 end TestBasic3;
 
 architecture TestBasic3_arch of TestBasic3 is
+	signal section: TestBasic3_SECTIONS;
 	signal nb_result_signal: bool;
 
 begin
@@ -22,10 +22,13 @@ begin
 	begin
 	if(clk='1' and clk'event) then
 		if rst = '1' then
+			section <= run;
 			nb_result_signal <= false;
 			b_out_notify <= true;
 		else
+			if section = run then
 			 -- FILL OUT HERE;
+			end if;
 		end if;
 	end if;
 	end process;

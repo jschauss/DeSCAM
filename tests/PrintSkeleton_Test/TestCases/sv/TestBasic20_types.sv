@@ -1,10 +1,9 @@
 package testbasic20_types;
 
-	import scam_model_types::*;
 	typedef enum logic {
 		section_a,
 		section_b
-	} Sections;
+	} TestBasic20_SECTIONS;
 
 	typedef enum logic [1:0] {
 		green,

@@ -1,15 +1,14 @@
 //
-// Created by ludwig on 05.11.19.
+// Created by tobias on 17.11.17.
 //
 
-#ifndef SCAM_TESTS_H
-#define SCAM_TESTS_H
+#ifndef PROJECT_TESTS_H
+#define PROJECT_TESTS_H
 
-#include "ModulesBasic.h"
+//#include "ModulesBasic.h"
+//#include "ModulesMasterSlave.h"
+//#include "ModuleFunctions.h"
 #include "ModuleGlobalLocal.h"
-#include "ModuleArrays.h"
-#include "ModuleFunctions.h"
-#include "ModulesMasterSlave.h"
+//#include "ModuleArrays.h"
 
-
-#endif //SCAM_TESTS_H
+#endif //PROJECT_TESTS_H

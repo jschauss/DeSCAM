@@ -36,8 +36,7 @@ struct TestMasterSlave0 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -73,15 +72,14 @@ struct TestMasterSlave1 : public sc_module {
 
     void fsm() {
         while (true) {
+            section = nextsection;
             if (section == SECTION_A) {
-                s_out->slave_write(1337);
-                wait(WAIT_TIME, SC_PS);//state
+                s_out->nb_write(1337);
                 nextsection = SECTION_B;
             }
-            else if (section == SECTION_B) {
+            if (section == SECTION_B) {
                 nextsection = SECTION_A;
             }
-            section = nextsection;
         }
     }
 };
@@ -115,8 +113,7 @@ struct TestMasterSlave2 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                s_out->slave_write(val);
-                wait(WAIT_TIME, SC_PS);//state
+                s_out->nb_write(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -157,10 +154,8 @@ struct TestMasterSlave3 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_out->slave_write(val);
-
+                s_in->nb_read(val);
+                s_out->nb_write(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -201,9 +196,8 @@ struct TestMasterSlave4 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -247,10 +241,9 @@ struct TestMasterSlave5 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
-                s_out->slave_write(val);
+                s_in->nb_read(val);
+                s_out->nb_write(val);
+                s_in2->nb_read(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -288,15 +281,12 @@ struct TestMasterSlave6 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
+                s_in->nb_read(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 nextsection = SECTION_A;
             }
         }
@@ -335,16 +325,14 @@ struct TestMasterSlave7 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_out->slave_write(val);
+                s_in->nb_read(val);
+                s_out->nb_write(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 ++val;
-                s_out->slave_write(val);
+                s_out->nb_write(val);
                 nextsection = SECTION_A;
             }
         }
@@ -383,16 +371,15 @@ struct TestMasterSlave8 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_out->slave_write(val);
+
+                s_in->nb_read(val);
+                s_out->nb_write(val);
                 if(val > 10)  nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 ++val;
-                s_out->slave_write(val);
+                s_out->nb_write(val);
                 nextsection = SECTION_A;
             }
         }
@@ -430,9 +417,8 @@ struct TestMasterSlave9 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
                 s_out->set(val);
+                s_in->nb_read(val);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -479,16 +465,14 @@ struct TestMasterSlave10 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 s_out->set(val);
                 if(succ) nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 val = val*2;
                 sharded_in->get(shared);
                 s_out->set(val*2 + shared);
@@ -535,15 +519,13 @@ struct TestMasterSlave11 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 s_out->set(val);
                 shared_in->get(succ);
                 if(succ) nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 val = val*2;
                 s_out->set(val);
                 nextsection = SECTION_A;
@@ -587,16 +569,14 @@ struct TestMasterSlave12 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 s_out->set(val);
                 if(succ) nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 val = val*2;
                 s_out->set(val*2);
                 nextsection = SECTION_A;
@@ -650,22 +630,20 @@ struct TestMasterSlave13 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
+                s_in->nb_read(val);
                 save_val += val;
-                m_in->master_read(val);
+                m_in->read(val);
                 save_val += val;
-                s_in2->slave_read(val);
+                s_in2->nb_read(val);
                 save_val += val;
-                m_out->master_write(save_val);
+                m_out->write(save_val);
                 shared_out->set(save_val);
                 s_out->set(val);
                 if(succ) nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
-                wait(WAIT_TIME, SC_PS);//state
-                s_in->slave_read(val);
-                s_in2->slave_read(val);
+                s_in->nb_read(val);
+                s_in2->nb_read(val);
                 val = val*2;
                 s_out->set(val*2);
                 nextsection = SECTION_A;

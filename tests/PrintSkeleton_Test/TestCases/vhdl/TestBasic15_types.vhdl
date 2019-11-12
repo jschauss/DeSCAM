@@ -1,7 +1,6 @@
 library ieee;
 use IEEE.numeric_std.all;
-use work.SCAM_Model_types.all;
 
 package TestBasic15_types is
-type Sections is (SECTION_A, SECTION_B);
+type TestBasic15_SECTIONS is (SECTION_A, SECTION_B);
 end package TestBasic15_types;

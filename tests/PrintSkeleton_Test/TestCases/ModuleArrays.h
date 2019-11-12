@@ -156,10 +156,10 @@ struct TestArray5 : public sc_module {
 
     void fsm() {
         while (true) {
-            b_in->try_read(test);
+            b_in->nb_read(test);
             myArray[0] = test + myArray[1];
             myArray[1]  = test;
-             b_out->try_write(myArray, succ);
+            succ = b_out->nb_write(myArray);
             if(succ) ++myArray[1];
         }
     }

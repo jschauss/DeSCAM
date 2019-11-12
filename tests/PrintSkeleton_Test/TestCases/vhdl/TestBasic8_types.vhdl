@@ -1,6 +1,6 @@
 library ieee;
 use IEEE.numeric_std.all;
-use work.SCAM_Model_types.all;
 
 package TestBasic8_types is
+type TestBasic8_SECTIONS is (run);
 end package TestBasic8_types;

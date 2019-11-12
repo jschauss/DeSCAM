@@ -17,6 +17,7 @@ struct TestBasic0 : public sc_module {
     Sections section;
     Sections nextsection;
 
+
     //Constructor
     SC_HAS_PROCESS(TestBasic0);
 
@@ -83,8 +84,8 @@ struct TestBasic1 : public sc_module {
         }
     }
 };
-//
-//
+
+
 struct TestBasic3 : public sc_module {
 
     //Constructor
@@ -102,9 +103,9 @@ struct TestBasic3 : public sc_module {
 
     void fsm() {
         while (true) {
-            b_out->try_write(10,nb_result);
+            nb_result = b_out->nb_write(10);
             if (nb_result) {
-                b_out->try_write(11);
+                b_out->nb_write(11);
             }
             wait(SC_ZERO_TIME);
         }
@@ -130,7 +131,7 @@ struct TestBasic4 : public sc_module {
 
     void fsm() {
         while (true) {
-            b_out->try_write(var, nb_result);
+            nb_result = b_out->nb_write(var);
             if (nb_result) {
                 ++var;
             } else {
@@ -222,7 +223,7 @@ struct TestBasic7 : public sc_module {
     void fsm() {
         while (true) {
             b_in->read(var);
-            m_out->master_write(var);
+            m_out->write(var);
             wait(SC_ZERO_TIME);
         }
     }
@@ -251,7 +252,7 @@ struct TestBasic8 : public sc_module {
         while (true) {
             b_in->read(var);
             var = 10;
-            m_out->master_write(var);
+            m_out->write(var);
             wait(SC_ZERO_TIME);
         }
     }
@@ -279,13 +280,12 @@ struct TestBasic9 : public sc_module {
     void fsm() {
         while (true) {
             b_in->read(var);
-            m_in->master_read(var);
+            m_in->read(var);
             wait(SC_ZERO_TIME);
         }
     }
 };
-//
-//
+
 
 enum Mode {
     READ, WRITE
@@ -421,7 +421,7 @@ struct TestBasic12 : public sc_module {
             if (section == SECTION_A) {
                 b_in->read(compoundType);
                 if (compoundType.x >= 5) {
-                    m_out->master_write(compoundType.x);
+                    m_out->write(compoundType.x);
                 }
                 nextsection = SECTION_B;
             }
@@ -465,7 +465,7 @@ struct TestBasic13 : public sc_module {
             section = nextsection;
             if (section == SECTION_A) {
                 b_in->read(compoundType);
-                b_out->try_write(compoundType);
+                b_out->nb_write(compoundType);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -517,7 +517,7 @@ struct TestBasic14 : public sc_module {
 
             }
             if (section == SECTION_B) {
-                b_out->try_write(compoundType);
+                b_out->nb_write(compoundType);
 
                 nextsection = SECTION_A;
             }
@@ -565,7 +565,7 @@ struct TestBasic15 : public sc_module {
 
             }
             if (section == SECTION_B) {
-                b_out->try_write(compoundType);
+                b_out->nb_write(compoundType);
                 compoundType.y = false;
                 nextsection = SECTION_A;
             }
@@ -615,7 +615,7 @@ struct TestBasic16 : public sc_module {
 
             }
             if (section == SECTION_B) {
-                b_out->try_write(compoundType);
+                b_out->nb_write(compoundType);
                 --compoundType.x;
                 compoundType.y = false;
                 nextsection = SECTION_A;
@@ -657,8 +657,8 @@ struct TestBasic17 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                m_in->master_read(compoundType);
-                b_out->try_write(compoundType);
+                m_in->read(compoundType);
+                b_out->nb_write(compoundType);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -701,7 +701,7 @@ struct TestBasic18 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                m_in->master_read(compoundType);
+                m_in->read(compoundType);
                 b_out->write(compoundType);
                 nextsection = SECTION_B;
             }
@@ -745,8 +745,8 @@ struct TestBasic19 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                b_out->try_write(compoundType);
-                m_in->master_read(compoundType);
+                b_out->nb_write(compoundType);
+                m_in->read(compoundType);
                 nextsection = SECTION_B;
             }
             if (section == SECTION_B) {
@@ -791,9 +791,9 @@ struct TestBasic20 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                b_out->try_write(compoundType);
-                m_in->master_read(compoundType);
-                m_in->master_read(compoundType);
+                b_out->nb_write(compoundType);
+                m_in->read(compoundType);
+                m_in->read(compoundType);
 								color = GREEN;
                 nextsection = SECTION_B;
             }
@@ -838,8 +838,8 @@ struct TestBasic21 : public sc_module {
         while (true) {
             section = nextsection;
             if (section == SECTION_A) {
-                b_out->try_write(compoundType);
-                m_out->master_write(compoundType);
+                b_out->nb_write(compoundType);
+                m_out->write(compoundType);
                 //m_out->write(compoundType);
                 nextsection = SECTION_B;
             }
@@ -894,8 +894,8 @@ struct TestBasic22 : public sc_module {
                 //--test;
                 if (test.y > 10) {
                     test.y = test2;
-                    m_out->master_write(test);
-                } else m_out->master_write(test);
+                    m_out->write(test);
+                } else m_out->write(test);
 
                 nextsection = SECTION_B;
             }
