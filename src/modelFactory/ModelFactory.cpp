@@ -455,7 +455,6 @@ void SCAM::ModelFactory::addFunctions(SCAM::Module *module, CXXRecordDecl *pDecl
 
     for (auto func: findFunction.getFunctionMap()) {
         auto newType = FindNewDatatype::getDataType(func.second->getResultType());
-        std::cout << "global? " << FindNewDatatype::isGlobal(func.second->getResultType()) << std::endl;
         if(FindNewDatatype::isGlobal(func.second->getResultType())){
             DataTypes::addDataType(newType);
         }else DataTypes::addLocalDataType(module->getName(),newType);
